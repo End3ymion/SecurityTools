@@ -1,25 +1,28 @@
 import requests
 import re
-from urllib.parse import urlparse, urljoin, parse_qs, urlencode
+from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup #for email
 import time
-import difflib
-import webbrowser
 
 import main
     
 # Configuration
+# List of possible directories
 COMMON_DIRS = [
     'admin', 'login', 'dashboard', 'config', 'backup', 'test', 'dev', 'debug.log', 'error.log', 'en',
     'uploads', 'images', 'css', 'js', 'api', 'robots.txt', 'robot.txt', 'users', 'phpinfo.php', 'user'
 ]
-TARGET_EXTENSIONS = ['txt', 'pdf', 'env', 'ini', 'log', 'xml', 'png','jpeg', 'jpg', 'mp3', 'xls', 'csv', 'doc']
-API_KEY = '830c41f3c3c7fd792929e33430440fc01f93102c60e25557fe3ce0a233691b5a' 
+
+# Key of Lymean account in Serpapi (like google dork search engine) 
+API_KEY = '830c41f3c3c7fd792929e33430440fc01f93102c60e25557fe3ce0a233691b5a'
+# List of possible file extensions
+TARGET_EXTENSIONS = ['txt', 'pdf', 'env', 'ini', 'log', 'xml', 'png','jpeg', 'jpg', 'mp3', 'xls', 'csv', 'doc'] 
+
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (EmailScanner)"
 }
 EMAIL_REGEX = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
-MAX_PAGES = 30  # Crawl limit
+MAX_PAGES = 30  
 TIMEOUT = 10
 
 #start directory scan
