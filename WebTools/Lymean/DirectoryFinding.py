@@ -14,7 +14,8 @@ COMMON_DIRS = [
 ]
 
 # Key of Lymean account in Serpapi (like google dork search engine) 
-API_KEY = '830c41f3c3c7fd792929e33430440fc01f93102c60e25557fe3ce0a233691b5a'
+API_KEY = 'd71f9fbd17b6839f19a9ca9e469c63298f90d66202765c72ceb6cf4eb7834fe5'
+
 # List of possible file extensions
 TARGET_EXTENSIONS = ['txt', 'pdf', 'env', 'ini', 'log', 'xml', 'png','jpeg', 'jpg', 'mp3', 'xls', 'csv', 'doc'] 
 
