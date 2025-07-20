@@ -1,6 +1,7 @@
 import re
 import requests
 import sys
+from urllib.parse import urlparse
 import pyfiglet # for styling word "Security Tools"
 from colorama import Fore, Style, init #for styling word "Security Tools"
 
@@ -26,13 +27,21 @@ def is_valid_target(target):
     return bool(ip_pattern.match(target) or domain_pattern.match(target) or url_pattern.match(target))
 
 def check_webpage_exists(target):
+
     if not target.startswith("http"):
         target = "http://" + target
-    try:
-        response = requests.get(target, timeout=5)
-        return response.status_code < 400
-    except requests.RequestException:
-        return False
+
+    parsed = urlparse(target)
+    base = parsed.netloc or parsed.path  # handles raw IP/domain inputs
+
+    for scheme in ["http", "https"]:
+        try:
+            response = requests.get(f"{scheme}://{base}", timeout=5)
+            if response.status_code < 400:
+                return True
+        except requests.RequestException:
+            continue
+    return False
     
 def return_to_home():
     while True:
@@ -84,7 +93,7 @@ def main():
     print(f"| 6. Component Version Enumerator                 | Identify versions of web components to find outdated or vulnerable ones." + " "*7 + "|")
 
     print("|" + "_"*49 + "|" + "_"*80 + "|")
-    
+
     print(f"| 7. SSRF Detection Tool                          | Detect Server-Side Request Forgery vulnerabilities." + " "*28 + "|")
 
     # Bottom line
