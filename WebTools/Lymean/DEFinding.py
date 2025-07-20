@@ -37,7 +37,7 @@ def directory_brute_force(base_url):
             if r.status_code in [200, 403]:
                 print(f"  [Found] {url} (status: {r.status_code})")
                 found_dirs.append(url)
-            time.sleep(main.REQUEST_DELAY)
+            time.sleep(2)
         except requests.RequestException as e:
             print(f"  [Error] {url}: {e}")
     if not found_dirs:
