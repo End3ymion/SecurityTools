@@ -84,8 +84,6 @@ def main():
     print(f"| 6. Component Version Enumerator                 | Identify versions of web components to find outdated or vulnerable ones." + " "*7 + "|")
 
     print(f"| 7. SSRF Detection Tool                          | Detect Server-Side Request Forgery vulnerabilities." + " "*28 + "|")
-    
-    print("|" + "_"*49 + "|" + "_"*80 + "|")
 
     # Bottom line
     print("|" + "_"*49 + "|" + "_"*80 + "|")
