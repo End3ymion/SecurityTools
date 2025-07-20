@@ -6,12 +6,12 @@ from colorama import Fore, Style, init #for styling word "Security Tools"
 
 from Lymean import DEFinding
 
-#USER_AGENT = 'Mozilla/5.0 (compatible; WebVulnScanner/1.0; +https://example.com)'
+USER_AGENT = 'Mozilla/5.0 (compatible; WebVulnScanner/1.0; +https://example.com)'
 
-#REQUEST_DELAY = 1  # seconds delay between requests to reduce blocking
+REQUEST_DELAY = 1  # seconds delay between requests to reduce blocking
 
-# def get_headers():
-#     return {'User-Agent': USER_AGENT}
+def get_headers():
+    return {'User-Agent': USER_AGENT}
 
 def get_base_url(input_str):
     if input_str.startswith('http://') or input_str.startswith('https://'):
