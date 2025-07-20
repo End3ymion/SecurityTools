@@ -42,6 +42,7 @@ def directory_brute_force(base_url):
             print(f"  [Error] {url}: {e}")
     if not found_dirs:
         print("  No common directories found.")
+    return found_dirs
     print(f"\033[1;33m*[200] \033[0m : Directory exist, sometime you are allowed to access and sometime not")
     print(f"\033[1;33m*[403] \033[0m : Directory exist but server block your request")
     print(f"\033[1;33m*\033[0m Better Destroy of the file if it is not necessary because it might be a vulnerability later.\n", "="*50)
