@@ -19,9 +19,6 @@ API_KEY = 'd71f9fbd17b6839f19a9ca9e469c63298f90d66202765c72ceb6cf4eb7834fe5'
 # List of possible file extensions
 TARGET_EXTENSIONS = ['txt', 'pdf', 'env', 'ini', 'log', 'xml', 'png','jpeg', 'jpg', 'mp3', 'xls', 'csv', 'doc'] 
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (EmailScanner)"
-}
 EMAIL_REGEX = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
 MAX_PAGES = 30  
 TIMEOUT = 10
@@ -103,7 +100,7 @@ def scan_emails(base_url):
         try:
             visited.add(url)
             print(f"[+] Scanning: {url}")
-            response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+            response = requests.get(url, headers=main.get_headers(), timeout=TIMEOUT)
             content = response.text
 
             new_emails = set(re.findall(EMAIL_REGEX, content)) - found_emails
