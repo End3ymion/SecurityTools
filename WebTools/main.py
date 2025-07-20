@@ -21,10 +21,9 @@ def get_base_url(input_str):
         return 'http://' + input_str.rstrip('/')
     
 def is_valid_target(target):
-    ip_pattern = re.compile(r"^(?:\d{1,3}\.){3}\d{1,3}$")
     domain_pattern = re.compile(r"^(?!\-)([a-zA-Z0-9\-]{1,63}\.)+[a-zA-Z]{2,}$")
     url_pattern = re.compile(r"^(https?://)?(www\.)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}(/[\w\-./?%&=]*)?$")
-    return bool(ip_pattern.match(target) or domain_pattern.match(target) or url_pattern.match(target))
+    return bool(domain_pattern.match(target) or url_pattern.match(target))
 
 def check_webpage_exists(target):
 
@@ -156,7 +155,7 @@ if __name__ == "__main__":
     # input url, domain, or ip
     attempts = 0
     while attempts < 3:
-        target = input("Enter target (IP, domain, or full URL): ").strip()
+        target = input("Enter target (domain or full URL): ").strip()
 
         if not target:
             attempts += 1
