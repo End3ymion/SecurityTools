@@ -70,6 +70,7 @@ def web_tools_menu():
         print("2. Component Version Enumeration")
         print("3. XSS Scanner")
         print("4. Header Analyzer")
+        print("5. SQL Injection")
         print("b. Back to Main Menu")
         print("-" * 20)
         choice = input("Choose an option: ").lower().strip()
@@ -84,6 +85,8 @@ def web_tools_menu():
             run_tool(os.path.join(BASE_DIR, "WebTools", "Phanith", "XSS_scanner.py"))
         elif choice == '4':
             run_tool(os.path.join(BASE_DIR, "WebTools", "Sovann", "header_analyzer.py"))
+        # elif choice == '5':
+        #     run_tool(os.path.join(BASE_DIR, "WebTools", "Bunhouy", "file.py"))
         elif choice == 'b':
             break
         else:
