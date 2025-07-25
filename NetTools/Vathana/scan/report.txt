@@ -1,0 +1,738 @@
+[36m====================================================================================================[0m
+                             [36m=== Network Security Assessment Report ===[0m                             
+[36m====================================================================================================[0m
+  Target: [37m172.16.119.128[0m
+  Scan Time: [37m2025-07-19 23:09:00[0m
+  Scan Duration: [37m3.04 seconds[0m
+  Services Detected: [37m26[0m
+  Total Ports Scanned: [37m26
+[36m----------------------------------------------------------------------------------------------------[0m
+
+[34m--- PORT 21/TCP ---[0m
+  Service: [37mVSFTPD[0m
+  State: [32mOPEN[0m
+  Version: [37m2.3.4[0m
+[37m  Banner: 220 (vsFTPd 2.3.4)  331 Please specify the password.[0m
+  Confidence: [37m95.0%[0m
+[31m  !!! VULNERABILITIES FOUND !!![0m
+    [31m• CVE-2011-2523 (Severity: CRITICAL, CVSS: V31)[0m
+  [37m      Description: vsftpd 2.3.4 downloaded between 20110630 and 20110703 contains a
+                 backdoor which opens a shell on port 6200/tcp.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 21 (FTP) common risks: Plain text credentials, Data interception[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[32m  >> RECOMMENDATIONS <<[0m
+  [37m    • Update vsftpd to latest version[0m
+  [37m    • Disable anonymous FTP[0m
+  [37m    • Use FTPS instead of plain FTP[0m
+[34m----------------------------------------[0m
+
+[34m--- PORT 22/TCP ---[0m
+  Service: [37mOPENSSH[0m
+  State: [32mOPEN[0m
+  Version: [37m4.7p1[0m
+[37m  Banner: SSH-2.0-OpenSSH_4.7p1 Debian-8ubuntu1[0m
+  Confidence: [37m95.0%[0m
+  [35mExtra Info:[0m
+  [37m    • ssh_protocol: SSH-2.0-OpenSSH_4.7p1 Debian-8ubuntu1[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 22 (SSH) common risks: Brute force attacks, Weak algorithms[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[32m  >> RECOMMENDATIONS <<[0m
+  [37m    • Update OpenSSH to latest version[0m
+  [37m    • Disable root login[0m
+  [37m    • Use key-based authentication[0m
+[34m----------------------------------------[0m
+
+[34m--- PORT 23/TCP ---[0m
+  Service: [37mTELNET[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner:  #'[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 23 (Telnet) common risks: Plain text protocol, No encryption[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 25/TCP ---[0m
+  Service: [37mPOSTFIX[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: 220 metasploitable.localdomain ESMTP Postfix (Ubuntu)
+            250-metasploitable.localdomain  250-PIPELINING  250-SIZE 10240000  250-VRFY
+            250-ETRN  250-STARTTLS  250-ENHANCEDSTATUSCODES  250-8BITMIME  250 DSN[0m
+  Confidence: [37m90.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 25 (SMTP) common risks: Email relay abuse, Information disclosure[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[32m  >> RECOMMENDATIONS <<[0m
+  [37m    • Update Postfix to latest version[0m
+  [37m    • Configure spam filtering[0m
+[34m----------------------------------------[0m
+
+[34m--- PORT 53/TCP ---[0m
+  Service: [37mDNS[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: No banner received[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 53 (DNS) common risks: DNS amplification attacks, Cache poisoning[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 80/TCP ---[0m
+  Service: [37mAPACHE[0m
+  State: [32mOPEN[0m
+  Version: [37m2.2.8[0m
+[37m  Banner: HTTP/1.1 200 OK  Date: Sat, 19 Jul 2025 14:12:51 GMT  Server: Apache/2.2.8
+            (Ubuntu) DAV/2  X-Powered-By: PHP/5.2.4-2ubuntu5.10  Content-Length: 891
+            Content-Type: text/html    <html><head><title>Metasploitable2 -
+            Linux</title></head><body> <pre>                  _                  _       _
+            _        _     _      ____    _ __ ___   ___| |_ __ _ ___ _ __ | | ___ (_) |_
+            __ _| |__ | | ___|___ \  | '_ ` _ \ / _ \ __/ _` / __| '_ \| |/ _ \| | __/ _`
+            | '_ \| |/ _ \ __) | | | | | | |  __/ || (_| \__ \ |_) | | (_) | | || (_| |
+            |_) | |  __// __/  |_| |_| |_|\___|\__\__,_|___/
+            .__/|_|\___/|_|\__\__,_|_.__/|_|\___|_____|                             |_|
+            Warning: Never expose this VM to an untrusted network!  Contact:
+            msfdev[at]metasploit.com  Login with msfadmin/msfadmin to get started   </pre>
+            <ul> <li><a href="/twiki/">TWiki</a></li> <li><a
+            href="/phpMyAdmin/">phpMyAdmin</a></li> <li><a
+            href="/mutillidae/">Mutillidae</a></li> <li><a href="/dvwa/">DVWA</a></li>
+            <li><a href="/dav/">WebDAV</a></li> </ul> </body> </html>[0m
+  Confidence: [37m95.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 80 (HTTP) common risks: Web application vulnerabilities,
+                 Information disclosure[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[32m  >> RECOMMENDATIONS <<[0m
+  [37m    • Update Apache to latest stable version[0m
+  [37m    • Disable server signature (ServerSignature Off)[0m
+  [37m    • Configure proper SSL/TLS settings[0m
+[34m----------------------------------------[0m
+
+[34m--- PORT 111/TCP ---[0m
+  Service: [37mRPC[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: No banner received[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 111 (RPC) common risks: Remote procedure call abuse, Information
+                 disclosure[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 139/TCP ---[0m
+  Service: [37mNETBIOS[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: No banner received[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 139 (NetBIOS) common risks: Information disclosure, Null session
+                 attacks[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 445/TCP ---[0m
+  Service: [37mSMB[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: No banner received[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 445 (SMB) common risks: EternalBlue, Credential relay attacks[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 512/TCP ---[0m
+  Service: [37mREXEC[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: No banner received[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 512 (rexec) common risks: Remote execution, Plain text
+                 authentication[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 513/TCP ---[0m
+  Service: [37mRLOGIN[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: No banner received[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 513 (rlogin) common risks: Remote login vulnerabilities, Weak
+                 authentication[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 514/TCP ---[0m
+  Service: [37mRSH[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: No banner received[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 514 (rsh) common risks: Remote shell access, No encryption[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 1099/TCP ---[0m
+  Service: [37mJAVA RMI[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: No banner received[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 1099 (Java RMI) common risks: Deserialization attacks[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 1524/TCP ---[0m
+  Service: [37mBINDSHELL[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: root@metasploitable:/#[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 1524 (Bindshell) common risks: Unauthenticated shell access[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 2049/TCP ---[0m
+  Service: [37mNFS[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: Error grabbing banner[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 2049 (NFS) common risks: File system exposure[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 2121/TCP ---[0m
+  Service: [37mPROFTPD[0m
+  State: [32mOPEN[0m
+  Version: [37m1.3.1[0m
+[37m  Banner: 220 ProFTPD 1.3.1 Server (Debian) [::ffff:172.16.119.128][0m
+  Confidence: [37m95.0%[0m
+[31m  !!! VULNERABILITIES FOUND !!![0m
+    [34m• CVE-2006-6563 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m      Description: Stack-based buffer overflow in the pr_ctrls_recv_request function in
+                 ctrls.c in the mod_ctrls module in ProFTPD before 1.3.1rc1 allows local
+                 users to execute arbitrary code via a large reqarglen length value.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+    [34m• CVE-2008-4242 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m      Description: ProFTPD 1.3.1 interprets long commands from an FTP client as multiple
+                 commands, which allows remote attackers to conduct cross-site request
+                 forgery (CSRF) attacks and execute arbitrary FTP commands via a long
+                 ftp:// URI that leverages an existing session from the FTP client
+                 implementation in a web browser.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+    [33m• CVE-2009-0542 (Severity: HIGH, CVSS: V2)[0m
+  [37m      Description: SQL injection vulnerability in ProFTPD Server 1.3.1 through 1.3.2rc2
+                 allows remote attackers to execute arbitrary SQL commands via a "%"
+                 (percent) character in the username, which introduces a "'" (single
+                 quote) character during variable substitution by mod_sql.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+    [34m• CVE-2009-0543 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m      Description: ProFTPD Server 1.3.1, with NLS support enabled, allows remote attackers
+                 to bypass SQL injection protection mechanisms via invalid, encoded
+                 multibyte characters, which are not properly handled in (1) mod_sql_mysql
+                 and (2) mod_sql_postgres.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 2121 (FTP) common risks: Plain text credentials[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[32m  >> RECOMMENDATIONS <<[0m
+  [37m    • Update ProFTPD to latest version[0m
+  [37m    • Disable anonymous access[0m
+[34m----------------------------------------[0m
+
+[34m--- PORT 3306/TCP ---[0m
+  Service: [37mMYSQL[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: j   iHost '172.16.119.1' is blocked because of many connection errors; unblock
+            with 'mysqladmin flush-hosts'[0m
+  Confidence: [37m70.0%[0m
+  [35mExtra Info:[0m
+  [37m    • mysql_version: j   iHost '172.16.119.1' is blocked because of many connection
+    errors; unblock with 'mysqladmin flush-hosts'[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 3306 (MySQL) common risks: SQL injection, Weak authentication[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 3632/TCP ---[0m
+  Service: [37mDISTCCD[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: No banner received[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 3632 (distccd) common risks: Remote code execution[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 5432/TCP ---[0m
+  Service: [37mPOSTGRESQL[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: E   SFATAL C0A000 Munsupported frontend protocol 1219.37398: server supports 1.0
+            to 3.0 Fpostmaster.c L1497 RProcessStartupPacket  [0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 5432 (PostgreSQL) common risks: SQL injection, Privilege
+                 escalation[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 5900/TCP ---[0m
+  Service: [37mVNC[0m
+  State: [32mOPEN[0m
+  Version: [37m003.003[0m
+[37m  Banner: RFB 003.003[0m
+  Confidence: [37m95.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 5900 (VNC) common risks: Weak authentication[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[32m  >> RECOMMENDATIONS <<[0m
+  [37m    • Update VNC software[0m
+  [37m    • Use strong passwords[0m
+[34m----------------------------------------[0m
+
+[34m--- PORT 6000/TCP ---[0m
+  Service: [37mX11[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: No banner received[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 6000 (X11) common risks: Unauthorized display access[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 6667/TCP ---[0m
+  Service: [37mIRC[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: ERROR :Closing Link: [172.16.119.1] (Too many unknown connections from your IP)[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 6667 (IRC) common risks: Botnet communication[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 6697/TCP ---[0m
+  Service: [37mIRC[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: :irc.Metasploitable.LAN NOTICE AUTH :*** Looking up your hostname...[0m
+  Confidence: [37m75.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 6697 (IRC) common risks: Botnet communication[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 8009/TCP ---[0m
+  Service: [37mAJP[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: No banner received[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 8009 (AJP) common risks: Ghostcat vulnerability[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[34m--- PORT 8180/TCP ---[0m
+  Service: [37mTOMCAT[0m
+  State: [32mOPEN[0m
+  Version: [37m5.5[0m
+[37m  Banner: HTTP/1.1 200 OK  Server: Apache-Coyote/1.1  Content-Type:
+            text/html;charset=ISO-8859-1  Transfer-Encoding: chunked  Date: Sat, 19 Jul
+            2025 14:12:51 GMT    2000  <!--   Licensed to the Apache Software Foundation
+            (ASF) under one or more   contributor license agreements.  See the NOTICE file
+            distributed with   this work for additional information regarding copyright
+            ownership.   The ASF licenses this file to You under the Apache License,
+            Version 2.0   (the "License"); you may not use this file except in compliance
+            with   the License.  You may obtain a copy of the License at
+            http://www.apache.org/licenses/LICENSE-2.0    Unless required by applicable
+            law or agreed to in writing, software   distributed under the License is
+            distributed on an "AS IS" BASIS,   WITHOUT WARRANTIES OR CONDITIONS OF ANY
+            KIND, either express or implied.   See the License for the specific language
+            governing permissions and   limitations under the License. --> <?xml
+            version="1.0" encoding="ISO-8859-1"?> <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML
+            1.0 Strict//EN"    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">  <html
+            xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">     <head>
+            <title>Apache Tomcat/5.5</title>     <style type="text/css">     /*<![CDATA[*/
+            body {           color: #000000;           background-color: #FFFFFF;
+            font-family: Arial, "Times New Roman", Times, serif;           margin: 10px
+            0px;       }      img {        border: none;     }          a:link, a:visited
+            {         color: blue     }      th {         font-family: Verdana, "Times New
+            Roman", Times, serif;         font-size: 110%;         font-weight: normal;
+            font-style: italic;         background: #D2A41C;         text-align: left;
+            }      td {         color: #000000;         font-family: Arial, Helvetica,
+            sans-serif;     }          td.menu {         background: #FFDC75;     }
+            .center {         text-align: center;     }      .code {         color:
+            #000000;         font-family: "Courier New", Courier, monospace;         font-
+            size: 110%;         margin-left: 2.5em;     }           #banner {
+            margin-bottom: 12px;      }       p#congrats {          margin-top: 0;
+            font-weight: bold;          text-align: center;      }       p#footer {
+            text-align: right;          font-size: 80%;      }      /*]]>*/    </style>
+            </head>  <body>  <!-- Header --> <table id="banner" width="100%">     <tr>
+            <td align="left" style="width:130px">         <a
+            href="http://tomcat.apache.org/">           <img src="tomcat.gif" height="92"
+            width="130" alt="The Mighty Tomcat - MEOW!"/>         </a>       </td>
+            <td align="left" valign="top"><b>Apache Tomcat/5.5</b></td>       <td
+            align="right">         <a href="http://www.apache.org/">           <img
+            src="asf-logo-wide.gif" height="51" width="537" alt="The Apache Software
+            Foundation"/>         </a>        </td>      </tr> </table>  <table>     <tr>
+            <!-- Table of Contents -->         <td valign="top">             <table
+            width="100%" border="1" cellspacing="0" cellpadding="3">                 <tr>
+            <th>Administration</th>                 </tr>                 <tr>
+            <td class="menu">                     <a href="manager/status">Status</a><br/>
+            <a href="admin">Tomcat&nbsp;Administration</a><br/>                     <a
+            href="manager/html">Tomcat&nbsp;Manager</a><br/>                     &nbsp;
+            </td>                 </tr>             </table>              <br />
+            <table width="100%" border="1" cellspacing="0" cellpadding="3">
+            <tr>                   <th>Documentation</th>                 </tr>
+            <tr>                   <td class="menu">                     <a href="RELEASE-
+            NOTES.txt">Release&nbsp;Notes</a><br/>                     <a href="tomcat-
+            docs/changelog.html">Change&nbsp;Log</a><br/>                     <a
+            href="tomcat-docs">Tomcat&nbsp;Documentation</a><br/>
+            &nbsp;                     &nbsp;                     </td>
+            </tr>             </table>                          <br/>             <table
+            width="100%" border="1" cellspacing="0" cellpadding="[0m
+  Confidence: [37m95.0%[0m
+[31m  !!! VULNERABILITIES FOUND !!![0m
+    [34m• CVE-2005-3510 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m      Description: Apache Tomcat 5.5.0 to 5.5.11 allows remote attackers to cause a denial
+                 of service (CPU consumption) via a large number of simultaneous requests
+                 to list a web directory that has a large number of files.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+    [34m• CVE-2006-3835 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m      Description: Apache Tomcat 5 before 5.5.17 allows remote attackers to list
+                 directories via a semicolon (;) preceding a filename with a mapped
+                 extension, as demonstrated by URLs ending with /;index.jsp and /;help.do.[0m
+  [37m      Solution: Apply patch or follow advisory:
+                http://www.securenetwork.it/ricerca/advisory/download/SN-2009-02.txt[0m
+
+    [33m• CVE-2007-0774 (Severity: HIGH, CVSS: V2)[0m
+  [37m      Description: Stack-based buffer overflow in the map_uri_to_worker function
+                 (native/common/jk_uri_worker_map.c) in mod_jk.so for Apache Tomcat JK Web
+                 Server Connector 1.2.19 and 1.2.20, as used in Tomcat 4.1.34 and 5.5.20,
+                 allows remote attackers to execute arbitrary code via a long URL that
+                 triggers the overflow in a URI worker map routine.[0m
+  [37m      Solution: Apply patch or follow advisory: http://www.cisco.com/en/US/products/produc
+                ts_security_advisory09186a008093f040.shtml[0m
+
+    [34m• CVE-2007-0450 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m      Description: Directory traversal vulnerability in Apache HTTP Server and Tomcat 5.x
+                 before 5.5.22 and 6.x before 6.0.10, when using certain proxy modules
+                 (mod_proxy, mod_rewrite, mod_jk), allows remote attackers to read
+                 arbitrary files via a .. (dot dot) sequence with combinations of (1) "/"
+                 (slash), (2) "\" (backslash), and (3) URL-encoded backslash (%5C)
+                 characters in the URL, which are valid separators in Tomcat but not in
+                 Apache.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+    [33m• CVE-2006-7197 (Severity: HIGH, CVSS: V2)[0m
+  [37m      Description: The AJP connector in Apache Tomcat 5.5.15 uses an incorrect length for
+                 chunks, which can cause a buffer over-read in the ajp_process_callback in
+                 mod_jk, which allows remote attackers to read portions of sensitive
+                 memory.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+    [34m• CVE-2006-7195 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m      Description: Cross-site scripting (XSS) vulnerability in implicit-objects.jsp in
+                 Apache Tomcat 5.0.0 through 5.0.30 and 5.5.0 through 5.5.17 allows remote
+                 attackers to inject arbitrary web script or HTML via certain header
+                 values.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+    [34m• CVE-2006-7196 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m      Description: Cross-site scripting (XSS) vulnerability in the calendar application
+                 example in Apache Tomcat 4.0.0 through 4.0.6, 4.1.0 through 4.1.31, 5.0.0
+                 through 5.0.30, and 5.5.0 through 5.5.15 allows remote attackers to
+                 inject arbitrary web script or HTML via the time parameter to cal2.jsp
+                 and possibly unspecified other vectors.  NOTE: this may be related to
+                 CVE-2006-0254.1.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+    [32m• CVE-2007-1858 (Severity: LOW, CVSS: V2)[0m
+  [37m      Description: The default SSL cipher configuration in Apache Tomcat 4.1.28 through
+                 4.1.31, 5.0.0 through 5.0.30, and 5.5.0 through 5.5.17 uses certain
+                 insecure ciphers, including the anonymous cipher, which allows remote
+                 attackers to obtain sensitive information or have other, unspecified
+                 impacts.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+    [34m• CVE-2007-2449 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m      Description: Multiple cross-site scripting (XSS) vulnerabilities in certain JSP
+                 files in the examples web application in Apache Tomcat 4.0.0 through
+                 4.0.6, 4.1.0 through 4.1.36, 5.0.0 through 5.0.30, 5.5.0 through 5.5.24,
+                 and 6.0.0 through 6.0.13 allow remote attackers to inject arbitrary web
+                 script or HTML via the portion of the URI after the ';' character, as
+                 demonstrated by a URI containing a "snp/snoop.jsp;" sequence.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+    [32m• CVE-2007-2450 (Severity: LOW, CVSS: V2)[0m
+  [37m      Description: Multiple cross-site scripting (XSS) vulnerabilities in the (1) Manager
+                 and (2) Host Manager web applications in Apache Tomcat 4.0.0 through
+                 4.0.6, 4.1.0 through 4.1.36, 5.0.0 through 5.0.30, 5.5.0 through 5.5.24,
+                 and 6.0.0 through 6.0.13 allow remote authenticated users to inject
+                 arbitrary web script or HTML via a parameter name to manager/html/upload,
+                 and other unspecified vectors.[0m
+  [37m      Solution: No specific solution provided. Check vendor advisories or update to latest
+                version.[0m
+
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 8180 (HTTP) common risks: Web application vulnerabilities[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[32m  >> RECOMMENDATIONS <<[0m
+  [37m    • Update Tomcat to latest version[0m
+  [37m    • Remove default applications[0m
+[34m----------------------------------------[0m
+
+[34m--- PORT 8787/TCP ---[0m
+  Service: [37mUNKNOWN[0m
+  State: [32mOPEN[0m
+  Version: [37munknown[0m
+[37m  Banner: No banner received[0m
+  Confidence: [37m70.0%[0m
+[33m  >> GENERAL SECURITY RISKS <<[0m
+    • [37mGeneral Risk[0m
+  [37m      Description: Port 8787 (Unknown) common risks: Unidentified service exposure[0m
+  [37m      Recommendation: Apply general security best practices for this service[0m
+
+[34m----------------------------------------[0m
+
+[36m====================================================================================================[0m
+                                      [36m=== SECURITY SUMMARY ===[0m                                      
+[36m====================================================================================================[0m
+  Total CVEs Found: [37m15[0m
+  Critical CVEs: [31m1[0m
+  High CVEs: [33m3[0m
+  Medium CVEs: [34m9[0m
+  Low CVEs: [32m2[0m
+  Services with Risks: [37m26[0m
+  Total Open Services: [37m26[0m
+
+[31m  🚨 CRITICAL VULNERABILITIES DETECTED! IMMEDIATE ACTION REQUIRED![0m
+
+[36m====================================================================================================[0m
+                                       [36m=== OS Fingerprint ===[0m                                       
+[36m====================================================================================================[0m
+  OS Family: [37mlinux[0m
+  OS Version: [37m9.1[0m
+  Confidence: [37m85.0%[0m
+  Method: [37mbanner_analysis[0m
+  [37m  Details: Detected from banners: ssh-2.0-openssh_4.7p1 debian-8ubuntu1 j   ihost '...[0m
+
+[36m====================================================================================================[0m
+
+[36m====================================================================================================[0m
+                                [36m=== DETAILED CVE VULNERABILITIES ===[0m                                
+[36m====================================================================================================[0m
+
+[34m• CVE-2006-6563 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m  Description: Stack-based buffer overflow in the pr_ctrls_recv_request function in
+               ctrls.c in the mod_ctrls module in ProFTPD before 1.3.1rc1 allows local
+               users to execute arbitrary code via a large reqarglen length value.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[34m• CVE-2008-4242 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m  Description: ProFTPD 1.3.1 interprets long commands from an FTP client as multiple
+               commands, which allows remote attackers to conduct cross-site request
+               forgery (CSRF) attacks and execute arbitrary FTP commands via a long ftp://
+               URI that leverages an existing session from the FTP client implementation
+               in a web browser.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[34m• CVE-2009-0543 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m  Description: ProFTPD Server 1.3.1, with NLS support enabled, allows remote attackers to
+               bypass SQL injection protection mechanisms via invalid, encoded multibyte
+               characters, which are not properly handled in (1) mod_sql_mysql and (2)
+               mod_sql_postgres.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[34m• CVE-2005-3510 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m  Description: Apache Tomcat 5.5.0 to 5.5.11 allows remote attackers to cause a denial of
+               service (CPU consumption) via a large number of simultaneous requests to
+               list a web directory that has a large number of files.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[34m• CVE-2006-3835 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m  Description: Apache Tomcat 5 before 5.5.17 allows remote attackers to list directories
+               via a semicolon (;) preceding a filename with a mapped extension, as
+               demonstrated by URLs ending with /;index.jsp and /;help.do.[0m
+  [37m  Solution: Apply patch or follow advisory:
+              http://www.securenetwork.it/ricerca/advisory/download/SN-2009-02.txt[0m
+
+[34m• CVE-2007-0450 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m  Description: Directory traversal vulnerability in Apache HTTP Server and Tomcat 5.x
+               before 5.5.22 and 6.x before 6.0.10, when using certain proxy modules
+               (mod_proxy, mod_rewrite, mod_jk), allows remote attackers to read arbitrary
+               files via a .. (dot dot) sequence with combinations of (1) "/" (slash), (2)
+               "\" (backslash), and (3) URL-encoded backslash (%5C) characters in the URL,
+               which are valid separators in Tomcat but not in Apache.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[34m• CVE-2006-7195 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m  Description: Cross-site scripting (XSS) vulnerability in implicit-objects.jsp in Apache
+               Tomcat 5.0.0 through 5.0.30 and 5.5.0 through 5.5.17 allows remote
+               attackers to inject arbitrary web script or HTML via certain header values.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[34m• CVE-2006-7196 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m  Description: Cross-site scripting (XSS) vulnerability in the calendar application
+               example in Apache Tomcat 4.0.0 through 4.0.6, 4.1.0 through 4.1.31, 5.0.0
+               through 5.0.30, and 5.5.0 through 5.5.15 allows remote attackers to inject
+               arbitrary web script or HTML via the time parameter to cal2.jsp and
+               possibly unspecified other vectors.  NOTE: this may be related to
+               CVE-2006-0254.1.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[34m• CVE-2007-2449 (Severity: MEDIUM, CVSS: V2)[0m
+  [37m  Description: Multiple cross-site scripting (XSS) vulnerabilities in certain JSP files in
+               the examples web application in Apache Tomcat 4.0.0 through 4.0.6, 4.1.0
+               through 4.1.36, 5.0.0 through 5.0.30, 5.5.0 through 5.5.24, and 6.0.0
+               through 6.0.13 allow remote attackers to inject arbitrary web script or
+               HTML via the portion of the URI after the ';' character, as demonstrated by
+               a URI containing a "snp/snoop.jsp;" sequence.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[32m• CVE-2007-1858 (Severity: LOW, CVSS: V2)[0m
+  [37m  Description: The default SSL cipher configuration in Apache Tomcat 4.1.28 through
+               4.1.31, 5.0.0 through 5.0.30, and 5.5.0 through 5.5.17 uses certain
+               insecure ciphers, including the anonymous cipher, which allows remote
+               attackers to obtain sensitive information or have other, unspecified
+               impacts.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[32m• CVE-2007-2450 (Severity: LOW, CVSS: V2)[0m
+  [37m  Description: Multiple cross-site scripting (XSS) vulnerabilities in the (1) Manager and
+               (2) Host Manager web applications in Apache Tomcat 4.0.0 through 4.0.6,
+               4.1.0 through 4.1.36, 5.0.0 through 5.0.30, 5.5.0 through 5.5.24, and 6.0.0
+               through 6.0.13 allow remote authenticated users to inject arbitrary web
+               script or HTML via a parameter name to manager/html/upload, and other
+               unspecified vectors.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[33m• CVE-2009-0542 (Severity: HIGH, CVSS: V2)[0m
+  [37m  Description: SQL injection vulnerability in ProFTPD Server 1.3.1 through 1.3.2rc2 allows
+               remote attackers to execute arbitrary SQL commands via a "%" (percent)
+               character in the username, which introduces a "'" (single quote) character
+               during variable substitution by mod_sql.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[33m• CVE-2007-0774 (Severity: HIGH, CVSS: V2)[0m
+  [37m  Description: Stack-based buffer overflow in the map_uri_to_worker function
+               (native/common/jk_uri_worker_map.c) in mod_jk.so for Apache Tomcat JK Web
+               Server Connector 1.2.19 and 1.2.20, as used in Tomcat 4.1.34 and 5.5.20,
+               allows remote attackers to execute arbitrary code via a long URL that
+               triggers the overflow in a URI worker map routine.[0m
+  [37m  Solution: Apply patch or follow advisory: http://www.cisco.com/en/US/products/products_s
+              ecurity_advisory09186a008093f040.shtml[0m
+
+[33m• CVE-2006-7197 (Severity: HIGH, CVSS: V2)[0m
+  [37m  Description: The AJP connector in Apache Tomcat 5.5.15 uses an incorrect length for
+               chunks, which can cause a buffer over-read in the ajp_process_callback in
+               mod_jk, which allows remote attackers to read portions of sensitive memory.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[31m• CVE-2011-2523 (Severity: CRITICAL, CVSS: V31)[0m
+  [37m  Description: vsftpd 2.3.4 downloaded between 20110630 and 20110703 contains a backdoor
+               which opens a shell on port 6200/tcp.[0m
+  [37m  Solution: No specific solution provided. Check vendor advisories or update to latest
+              version.[0m
+
+[36m====================================================================================================[0m
