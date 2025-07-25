@@ -5,4 +5,4 @@ colorama
 scapy
 nvdlib
 tqdm
-
+pyfiglet
