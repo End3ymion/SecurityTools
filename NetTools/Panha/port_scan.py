@@ -7,6 +7,21 @@ import argparse
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from colorama import Fore, Style, init
+from pyfiglet import Figlet
+from termcolor import colored
+
+def print_tool_name():
+    f = Figlet(font='standard')
+    tool_name = "P1 - SCAN"
+
+    # Render the big banner text in cyan and bold
+    styled_text = colored(f.renderText(tool_name), 'cyan', attrs=['bold'])
+    print(styled_text)
+
+    # Add stylized description and lines below it
+    print(colored("=" * 60, 'cyan', attrs=['bold']))
+    print(colored("P1 - SCAN  •  Advanced Port & Vulnerability Scanner", 'green', attrs=['bold']))
+    print(colored("=" * 60, 'cyan', attrs=['bold'])) # Cyan colored line
 
 def validate_target(target):
     try:
@@ -182,6 +197,7 @@ def main(target, full_scan=False, output_file=False):
 init(autoreset=True)
       
 if __name__ == "__main__":
+    print_tool_name()
     parser = argparse.ArgumentParser(description="Advanced Port & Info Scanner")
     target = input("Enter target IP or domain: ").strip()
 
