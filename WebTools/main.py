@@ -86,10 +86,6 @@ def main():
 
     print("|" + "_"*49 + "|" + "_"*80 + "|")
 
-    print(f"| 5. Web Login Brute-Forcer                       | Attempt to brute-force login forms using known username/password lists." + " "*8 + "|")
-
-    print("|" + "_"*49 + "|" + "_"*80 + "|")
-
     print(f"| 6. Component Version Enumerator                 | Identify versions of web components to find outdated or vulnerable ones." + " "*7 + "|")
 
     # Bottom line
