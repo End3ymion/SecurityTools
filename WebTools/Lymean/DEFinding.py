@@ -4,6 +4,8 @@ from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup #for email
 import time
 import os # Added for clear_screen
+import pyfiglet # for styling word "Security Tools"
+from colorama import Fore, Style, init #for styling word "Security Tools"
 
 # Configuration
 # List of possible directories
@@ -59,7 +61,6 @@ def directory_brute_force(base_url):
     print(f"\033[1;33m*[403] \033[0m : Directory exist but server block your request")
     print(f"\033[1;33m*\033[0m Better Destroy of the file if it is not necessary because it might be a vulnerability later.\n", "="*50)
     return found_dirs # It's good practice to return the found directories
-
 #end of directory scan
 
 #start using google dork
@@ -145,7 +146,20 @@ def scan_emails(base_url):
 
 # --- Main function for DEFinding.py (restored) ---
 def main():
-    print("--- Directory & Email Finding Tool ---")
+    init(autoreset=True)  # Ensure colors reset correctly on all terminals
+
+    # Start title styling
+    ascii_art = pyfiglet.figlet_format("Directory / Email Brute-Force", font="doom", width=200)
+    colored_art = ""
+
+    for ch in ascii_art:
+        if ch == " ":
+            colored_art += ch  # keep spaces default color
+        else:
+            colored_art += Fore.BLUE + ch + Style.RESET_ALL  # color letters blue
+
+    print(colored_art)  # <-- only print once after loop
+    # End title styling
     base_url = input("Enter the target base URL (e.g., example.com or http://example.com): ").strip()
 
     # Automatically prepend http:// if no scheme is provided
