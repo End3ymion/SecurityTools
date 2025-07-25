@@ -69,6 +69,7 @@ def net_tools_menu():
         print("2. FTP Brute Forcer")
         print("3. Port Service Scanner")
         print("4. Loot Collector")
+        print("5. Port Scanner")
         print("b. Back to Main Menu")
         print("-" * 20)
         choice = input("Choose an option: ").lower().strip()
@@ -89,6 +90,10 @@ def net_tools_menu():
         elif choice == '4':
             # Path based on your provided 'tree' structure
             run_tool(os.path.join(BASE_DIR, "NetTools", "Karona", "loot_collector.py"))
+        elif choice == '5':
+            # Path based on your provided 'tree' structure
+            run_tool(os.path.join(BASE_DIR, "NetTools", "Panha", "port_scan.py"))
+        
         elif choice == 'b':
             break
         else:
