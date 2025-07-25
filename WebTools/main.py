@@ -86,7 +86,7 @@ def main():
 
     print("|" + "_"*49 + "|" + "_"*80 + "|")
 
-    print(f"| 6. Component Version Enumerator                 | Identify versions of web components to find outdated or vulnerable ones." + " "*7 + "|")
+    print(f"| 5. Component Version Enumerator                 | Identify versions of web components to find outdated or vulnerable ones." + " "*7 + "|")
 
     # Bottom line
     print("|" + "_"*49 + "|" + "_"*80 + "|")
