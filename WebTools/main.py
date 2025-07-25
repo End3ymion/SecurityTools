@@ -147,8 +147,6 @@ def main():
             # elif option == 6:
             #     return_to_home()
 
-            # elif option == 7:
-            #     return_to_home()
             else:
                 attempts += 1
                 print(f"\033[1;31m[Error]\033[0m Invalid option. Please choose a number between 1 and 7. Attempts left: {3 - attempts}")
