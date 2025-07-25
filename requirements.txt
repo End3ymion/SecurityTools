@@ -1,0 +1,8 @@
+requests
+beautifulsoup4
+selenium
+colorama
+scapy
+nvdlib
+tqdm
+
