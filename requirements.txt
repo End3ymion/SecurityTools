@@ -6,11 +6,6 @@ scapy
 nvdlib
 tqdm
 pyfiglet
-socket
 subprocess
-json
-argparse
-datetime
-concurrent
 colorama
 termcolor

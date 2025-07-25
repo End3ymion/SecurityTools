@@ -168,7 +168,7 @@ def print_results(results, output_file=None):
         # output_file = os.path.basename(output_file)
         with open(save_path, "w") as f:
             json.dump(results, f, indent=4)
-        print(f"{Fore.GREEN}[+] Results saved to {Style.BRIGHT}{output_file}\n")
+        print(f"{Fore.GREEN}[+] Results saved to {Style.BRIGHT}{save_path}\n")
   
 def main(target, full_scan=False, output_file=False):
     target_ip = validate_target(target)
