@@ -59,9 +59,6 @@ def return_to_home():
 
 def main():
     attempts = 0
-    base_url = get_base_url(target)
-
-    print("Please choose options 1 - 7:\n")
 
     # Header lines using "_" * length
     print(" "+"_"*50 + "_"*80)
@@ -101,9 +98,35 @@ def main():
     while attempts < 3:
         try:
             option = int(input("Please choose option (1–7): "))
-            print(f"[Info] Target base URL: {base_url}")
 
             if option == 1:
+                 # input url, domain, or ip
+                attempts = 0
+                while attempts < 3:
+                    target = input("Enter target (domain or full URL): ").strip()
+
+                    if not target:
+                        attempts += 1
+                        print(f"\033[1;31m[Error]\033[0m No input provided. Attempts left: {3 - attempts}")
+                        continue
+
+                    if not is_valid_target(target):
+                        attempts += 1
+                        print(f"\033[1;31m[Error]\033[0m Invalid format. Attempts left: {3 - attempts}")
+                        continue
+
+                    if not check_webpage_exists(target):
+                        attempts += 1
+                        print(f"\033[1;31m[Error]\033[0m Webpage not reachable. Attempts left: {3 - attempts}")
+                        continue
+
+                    print(f"\033[1;32m[OK]\033[0m Valid and reachable target: {target}")
+                    base_url = get_base_url(target)
+                    break
+                else:
+                    print(f"\033[1;31mYou ran out of attempts.\033[0m")
+                    sys.exit()
+
                 found_dirs = DEFinding.directory_brute_force(base_url)
                 # google_dork = DEFinding.search_google_dork(base_url)  # Don't open this function guys!!
                 scan_email = DEFinding.scan_emails(base_url)
@@ -140,7 +163,7 @@ if __name__ == "__main__":
     init(autoreset=True)  # Ensure colors reset correctly on all terminals
 
     # Start title styling
-    ascii_art = pyfiglet.figlet_format("SECURITY TOOLS", font="doom", width=200)
+    ascii_art = pyfiglet.figlet_format("WEB SECURITY TOOLS", font="doom", width=200)
     colored_art = ""
 
     for ch in ascii_art:
@@ -152,29 +175,4 @@ if __name__ == "__main__":
     print(colored_art)  # <-- only print once after loop
     # End title styling
 
-    # input url, domain, or ip
-    attempts = 0
-    while attempts < 3:
-        target = input("Enter target (domain or full URL): ").strip()
-
-        if not target:
-            attempts += 1
-            print(f"\033[1;31m[Error]\033[0m No input provided. Attempts left: {3 - attempts}")
-            continue
-
-        if not is_valid_target(target):
-            attempts += 1
-            print(f"\033[1;31m[Error]\033[0m Invalid format. Attempts left: {3 - attempts}")
-            continue
-
-        if not check_webpage_exists(target):
-            attempts += 1
-            print(f"\033[1;31m[Error]\033[0m Webpage not reachable. Attempts left: {3 - attempts}")
-            continue
-
-        print(f"\033[1;32m[OK]\033[0m Valid and reachable target: {target}")
-        main()
-        break
-    else:
-        print(f"\033[1;31mYou ran out of attempts.\033[0m")
-        sys.exit()
+    main()
