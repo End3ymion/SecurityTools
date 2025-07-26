@@ -1,5 +1,0 @@
-scapy==2.4.5 # For OS fingerprinting and UDP scanning
-nvdlib==0.4.1 # For NVD API integration
-tqdm==4.62.3 # For progress bars
-colorama==0.4.4 # For colored terminal output
-
