@@ -1,0 +1,116 @@
+{
+  "vnc:003.003": [],
+  "apache:2.2.8": [],
+  "proftpd:1.3.1": [
+    {
+      "id": "CVE-2006-6563",
+      "description": "Stack-based buffer overflow in the pr_ctrls_recv_request function in ctrls.c in the mod_ctrls module in ProFTPD before 1.3.1rc1 allows local users to execute arbitrary code via a large reqarglen length value.",
+      "severity": "MEDIUM",
+      "cvss_score": "V2",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    },
+    {
+      "id": "CVE-2008-4242",
+      "description": "ProFTPD 1.3.1 interprets long commands from an FTP client as multiple commands, which allows remote attackers to conduct cross-site request forgery (CSRF) attacks and execute arbitrary FTP commands via a long ftp:// URI that leverages an existing session from the FTP client implementation in a web browser.",
+      "severity": "MEDIUM",
+      "cvss_score": "V2",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    },
+    {
+      "id": "CVE-2009-0542",
+      "description": "SQL injection vulnerability in ProFTPD Server 1.3.1 through 1.3.2rc2 allows remote attackers to execute arbitrary SQL commands via a \"%\" (percent) character in the username, which introduces a \"'\" (single quote) character during variable substitution by mod_sql.",
+      "severity": "HIGH",
+      "cvss_score": "V2",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    },
+    {
+      "id": "CVE-2009-0543",
+      "description": "ProFTPD Server 1.3.1, with NLS support enabled, allows remote attackers to bypass SQL injection protection mechanisms via invalid, encoded multibyte characters, which are not properly handled in (1) mod_sql_mysql and (2) mod_sql_postgres.",
+      "severity": "MEDIUM",
+      "cvss_score": "V2",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    }
+  ],
+  "vsftpd:2.3.4": [
+    {
+      "id": "CVE-2011-2523",
+      "description": "vsftpd 2.3.4 downloaded between 20110630 and 20110703 contains a backdoor which opens a shell on port 6200/tcp.",
+      "severity": "CRITICAL",
+      "cvss_score": "V31",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    }
+  ],
+  "openssh:4.7p1": [],
+  "tomcat:5.5": [
+    {
+      "id": "CVE-2005-3510",
+      "description": "Apache Tomcat 5.5.0 to 5.5.11 allows remote attackers to cause a denial of service (CPU consumption) via a large number of simultaneous requests to list a web directory that has a large number of files.",
+      "severity": "MEDIUM",
+      "cvss_score": "V2",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    },
+    {
+      "id": "CVE-2006-3835",
+      "description": "Apache Tomcat 5 before 5.5.17 allows remote attackers to list directories via a semicolon (;) preceding a filename with a mapped extension, as demonstrated by URLs ending with /;index.jsp and /;help.do.",
+      "severity": "MEDIUM",
+      "cvss_score": "V2",
+      "solution": "Apply patch or follow advisory: http://www.securenetwork.it/ricerca/advisory/download/SN-2009-02.txt"
+    },
+    {
+      "id": "CVE-2007-0774",
+      "description": "Stack-based buffer overflow in the map_uri_to_worker function (native/common/jk_uri_worker_map.c) in mod_jk.so for Apache Tomcat JK Web Server Connector 1.2.19 and 1.2.20, as used in Tomcat 4.1.34 and 5.5.20, allows remote attackers to execute arbitrary code via a long URL that triggers the overflow in a URI worker map routine.",
+      "severity": "HIGH",
+      "cvss_score": "V2",
+      "solution": "Apply patch or follow advisory: http://www.cisco.com/en/US/products/products_security_advisory09186a008093f040.shtml"
+    },
+    {
+      "id": "CVE-2007-0450",
+      "description": "Directory traversal vulnerability in Apache HTTP Server and Tomcat 5.x before 5.5.22 and 6.x before 6.0.10, when using certain proxy modules (mod_proxy, mod_rewrite, mod_jk), allows remote attackers to read arbitrary files via a .. (dot dot) sequence with combinations of (1) \"/\" (slash), (2) \"\\\" (backslash), and (3) URL-encoded backslash (%5C) characters in the URL, which are valid separators in Tomcat but not in Apache.",
+      "severity": "MEDIUM",
+      "cvss_score": "V2",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    },
+    {
+      "id": "CVE-2006-7197",
+      "description": "The AJP connector in Apache Tomcat 5.5.15 uses an incorrect length for chunks, which can cause a buffer over-read in the ajp_process_callback in mod_jk, which allows remote attackers to read portions of sensitive memory.",
+      "severity": "HIGH",
+      "cvss_score": "V2",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    },
+    {
+      "id": "CVE-2006-7195",
+      "description": "Cross-site scripting (XSS) vulnerability in implicit-objects.jsp in Apache Tomcat 5.0.0 through 5.0.30 and 5.5.0 through 5.5.17 allows remote attackers to inject arbitrary web script or HTML via certain header values.",
+      "severity": "MEDIUM",
+      "cvss_score": "V2",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    },
+    {
+      "id": "CVE-2006-7196",
+      "description": "Cross-site scripting (XSS) vulnerability in the calendar application example in Apache Tomcat 4.0.0 through 4.0.6, 4.1.0 through 4.1.31, 5.0.0 through 5.0.30, and 5.5.0 through 5.5.15 allows remote attackers to inject arbitrary web script or HTML via the time parameter to cal2.jsp and possibly unspecified other vectors.  NOTE: this may be related to CVE-2006-0254.1.",
+      "severity": "MEDIUM",
+      "cvss_score": "V2",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    },
+    {
+      "id": "CVE-2007-1858",
+      "description": "The default SSL cipher configuration in Apache Tomcat 4.1.28 through 4.1.31, 5.0.0 through 5.0.30, and 5.5.0 through 5.5.17 uses certain insecure ciphers, including the anonymous cipher, which allows remote attackers to obtain sensitive information or have other, unspecified impacts.",
+      "severity": "LOW",
+      "cvss_score": "V2",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    },
+    {
+      "id": "CVE-2007-2449",
+      "description": "Multiple cross-site scripting (XSS) vulnerabilities in certain JSP files in the examples web application in Apache Tomcat 4.0.0 through 4.0.6, 4.1.0 through 4.1.36, 5.0.0 through 5.0.30, 5.5.0 through 5.5.24, and 6.0.0 through 6.0.13 allow remote attackers to inject arbitrary web script or HTML via the portion of the URI after the ';' character, as demonstrated by a URI containing a \"snp/snoop.jsp;\" sequence.",
+      "severity": "MEDIUM",
+      "cvss_score": "V2",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    },
+    {
+      "id": "CVE-2007-2450",
+      "description": "Multiple cross-site scripting (XSS) vulnerabilities in the (1) Manager and (2) Host Manager web applications in Apache Tomcat 4.0.0 through 4.0.6, 4.1.0 through 4.1.36, 5.0.0 through 5.0.30, 5.5.0 through 5.5.24, and 6.0.0 through 6.0.13 allow remote authenticated users to inject arbitrary web script or HTML via a parameter name to manager/html/upload, and other unspecified vectors.",
+      "severity": "LOW",
+      "cvss_score": "V2",
+      "solution": "No specific solution provided. Check vendor advisories or update to latest version."
+    }
+  ]
+}

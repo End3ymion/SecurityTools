@@ -1,11 +1,9 @@
 import os
 import sys
 import subprocess
-# Added for console coloring and banner
 from colorama import Fore, Style, init
 import pyfiglet
 
-# Base directory of the main script (for dynamic path resolution)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def clear_screen():
@@ -22,34 +20,28 @@ def run_tool(path_to_script, *args):
         path_to_script (str): The relative or absolute path to the Python script to execute.
         *args: Any additional command-line arguments to pass to the script.
     """
-    # Ensure the script path is absolute and normalized
     full_script_path = os.path.abspath(path_to_script)
     
     print(f"\n--- Running: {os.path.basename(full_script_path)} ---")
     try:
         if sys.platform.startswith('win'):
-            # Normalize paths for Windows to ensure consistent backslashes and case
             full_script_path_norm = os.path.normpath(full_script_path)
             python_executable_norm = os.path.normpath(sys.executable)
 
-            # Quote paths for the command line
             full_script_path_quoted = f'"{full_script_path_norm}"'
             python_executable_quoted = f'"{python_executable_norm}"'
             
             cmd_parts = [python_executable_quoted, full_script_path_quoted]
             for arg in args:
-                # Quote arguments too, especially if they might contain spaces
                 cmd_parts.append(f'"{arg}"') 
             
             cmd_str = " ".join(cmd_parts)
-            print(f"DEBUG (Windows cmd): {cmd_str}") # Debug print: Shows the exact command being run
             process = subprocess.Popen(cmd_str, stdin=sys.stdin, stdout=sys.stdout, stderr=subprocess.STDOUT, shell=True)
         else:
-            # For Linux/macOS, pass the command as a list of arguments.
             command = [sys.executable, full_script_path] + list(args)
             process = subprocess.Popen(command, stdin=sys.stdin, stdout=sys.stdout, stderr=subprocess.STDOUT)
         
-        process.wait() # Wait for the subprocess to complete
+        process.wait()
         print(f"\n--- Finished: {os.path.basename(full_script_path)} ---")
     except KeyboardInterrupt:
         print(f"\nTool '{os.path.basename(full_script_path)}' execution interrupted by user.")
@@ -69,7 +61,7 @@ def net_tools_menu():
         print("2. FTP Brute Forcer")
         print("3. Port Service Scanner")
         print("4. Loot Collector")
-        print("5. Port Scanner")
+        print("5. Advanced Port Scanner (P1-SCAN)")
         print("b. Back to Main Menu")
         print("-" * 20)
         choice = input("Choose an option: ").lower().strip()
@@ -86,14 +78,11 @@ def net_tools_menu():
                 print("Target IP is required for FTP Brute Forcer. Returning to menu.")
                 input("Press Enter to continue...")
         elif choice == '3':
-            run_tool(os.path.join(BASE_DIR, "NetTools", "Vathana", "port_service.py"), "--tui")
+            run_tool(os.path.join(BASE_DIR, "NetTools", "Vathana", "port_service.py"))
         elif choice == '4':
-            # Path based on your provided 'tree' structure
             run_tool(os.path.join(BASE_DIR, "NetTools", "Karona", "loot_collector.py"))
         elif choice == '5':
-            # Path based on your provided 'tree' structure
             run_tool(os.path.join(BASE_DIR, "NetTools", "Panha", "port_scan.py"))
-        
         elif choice == 'b':
             break
         else:
@@ -134,24 +123,20 @@ def web_tools_menu():
 
 def main():
     """Main entry point for the Tool Portal, displaying top-level categories."""
-    # Initialize colorama for cross-platform colored output
     init(autoreset=True) 
 
-    # Start title styling
-    # Assuming pyfiglet is installed for the banner
     try:
         ascii_art = pyfiglet.figlet_format("SECURITY TOOLS", font="doom", width=200)
         colored_art = ""
         for ch in ascii_art:
             if ch == " ":
-                colored_art += ch  # keep spaces default color
+                colored_art += ch
             else:
-                colored_art += Fore.BLUE + ch + Style.RESET_ALL  # color letters blue
+                colored_art += Fore.BLUE + ch + Style.RESET_ALL
         print(colored_art)
     except Exception as e:
         print(f"Warning: Could not generate ASCII banner (pyfiglet might be missing or font 'doom' not found). Error: {e}")
         print("--- SECURITY TOOLS ---")
-    # End title styling
 
     while True:
         clear_screen()
