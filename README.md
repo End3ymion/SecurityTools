@@ -1,6 +1,4 @@
-Here’s a well-formatted `README.md` you can drop into your repo:
 
-````markdown
 # Security Tool Hub
 
 A collection of custom-built security scripts for network and web application assessment, compiled into a single, easy-to-use command-line interface.
