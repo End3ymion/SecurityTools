@@ -1,52 +1,67 @@
-Security Tool Hub
+Here’s a well-formatted `README.md` you can drop into your repo:
 
-A collection of custom-built security scripts for network and web application assessment, compiled into a single, easy-to-use command-line interface. This project was developed by students of CADT for educational purposes.
-Tools Included
-NetTools (Network Security)
+````markdown
+# Security Tool Hub
 
-    Persistence (Linux): A tool to create various forms of persistence on a Linux target, such as via SSH keys, cron jobs, or .bashrc files.
+A collection of custom-built security scripts for network and web application assessment, compiled into a single, easy-to-use command-line interface.
 
-    FTP Brute Forcer: A script that attempts to find valid login credentials for an FTP server by trying a list of common usernames and passwords.
+> Developed by students of CADT for **educational purposes** only.
 
-    Port Service Scanner: A comprehensive scanner that identifies open ports, the services running on them, and queries the NVD for known CVEs.
+---
 
-    Loot Collector: A post-exploitation script that gathers system information, user details, network configuration, and command history from a target machine.
+## Tools Included
 
-    Advanced Port Scanner (P1-SCAN): A fast, multi-threaded port scanner that also performs banner grabbing and basic OS fingerprinting.
+### NetTools (Network Security)
+- **Persistence (Linux)**: Creates various forms of persistence on a Linux system using SSH keys, cron jobs, or `.bashrc`.
+- **FTP Brute Forcer**: Attempts login with common FTP credentials.
+- **Port Service Scanner**: Scans open ports, identifies running services, and checks for known CVEs via NVD.
+- **Loot Collector**: Post-exploitation script that extracts system info, user data, network configs, and command history.
+- **Advanced Port Scanner (P1-SCAN)**: Fast, multi-threaded scanner with banner grabbing and basic OS fingerprinting.
+- **SSH Brute-Force Engine**: Multi-threaded tool to brute-force SSH logins.
 
-    SSH Brute-Force Engine: A multithreaded tool to brute-force SSH credentials.
+### WebTools (Web Application Security)
+- **Directory & Email Finder**: Crawls websites to discover hidden directories and email addresses.
+- **Component Version Enumerator**: Identifies versions of web technologies (frameworks/libraries).
+- **XSS Scanner**: Automatically tests for Cross-Site Scripting vulnerabilities.
+- **Header Analyzer**: Checks HTTP security headers and reports on configuration.
+- **SQL Injection Tester**: Scans for and identifies SQL injection points.
 
-WebTools (Web Application Security)
+---
 
-    Directory & Email Finding: A script to discover hidden directories and email addresses on a web server.
+## Installation
 
-    Component Version Enumeration: A tool that identifies the versions of web components (like frameworks and libraries) in use.
+Clone the repository:
 
-    XSS Scanner: A script designed to automatically test web pages for Cross-Site Scripting (XSS) vulnerabilities.
+```bash
+git clone https://github.com/End3ymion/SecurityTools.git
+cd SecurityTools
+````
 
-    Header Analyzer: A utility that inspects HTTP security headers of a website and reports on their configuration.
+Install the dependencies:
 
-    SQL Injection: A tool to scan for and identify potential SQL injection vulnerabilities in web applications.
+```bash
+pip install -r requirements.txt
+```
 
-Installation
+---
 
-    Clone the repository:
+## Usage
 
-    git clone https://github.com/End3ymion/SecurityTools.git
-    cd SecurityTools
+Launch the main menu interface:
 
-    Install the required dependencies:
-
-
-    pip install -r requirements.txt
-
-Usage
-
-To start the Security Tool Hub, run the main.py script from the root of the project directory.
-
+```bash
 python main.py
+```
 
-This will launch the main menu, where you can navigate to the NetTools or WebTools submenus to select and run any of the included scripts.
-Disclaimer
+From there, navigate to **NetTools** or **WebTools** and choose the script you want to run.
 
-This toolkit is intended for educational and authorized security testing purposes only. Do not use these tools on any system or network without explicit permission from the owner. The developers are not responsible for any misuse or damage caused by this software.
+---
+
+## Disclaimer
+
+This toolkit is intended **for educational and authorized security testing purposes only**.
+Do **not** use these tools on any network, system, or website without **explicit permission** from the owner.
+The developers assume **no responsibility** for misuse or damages caused by this software.
+
+---
+
