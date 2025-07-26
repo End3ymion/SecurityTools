@@ -69,14 +69,8 @@ def net_tools_menu():
         if choice == '1':
             run_tool(os.path.join(BASE_DIR, "NetTools", "David", "persistence.py"))
         elif choice == '2':
-            print("\nNote: FTP Brute Forcer requires a target IP.")
-            print("Example: python FTP_Brute_Forcer.py -t 192.168.1.1")
-            target = input("Enter target FTP server IP: ").strip()
-            if target:
-                run_tool(os.path.join(BASE_DIR, "NetTools", "Kimhong", "FTP_Brute_Forcer.py"), "-t", target)
-            else:
-                print("Target IP is required for FTP Brute Forcer. Returning to menu.")
-                input("Press Enter to continue...")
+            # The script will now prompt for the IP itself.
+            run_tool(os.path.join(BASE_DIR, "NetTools", "Kimhong", "FTP_Brute_Forcer.py"))
         elif choice == '3':
             run_tool(os.path.join(BASE_DIR, "NetTools", "Vathana", "port_service.py"))
         elif choice == '4':
